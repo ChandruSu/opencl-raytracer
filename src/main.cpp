@@ -11,11 +11,12 @@ int main(int argc, char const *argv[])
   {
     cmp::ComputeHandler handler = cmp::ComputeHandler();
     handler.createQueue(NULL);
-    handler.createProgram("addVec.cl");
+    cmp::ComputeProgram* program = handler.createProgram("cl/addVec.cl");
+    cmp::ComputeKernel* kernel = program->createKernel("vecAdd");
   }
   catch(const std::exception& e)
   {
-    std::cerr << e.what() << '\n';
+    std::cerr << e.what() << std::endl;
   }
 
   SSRT_DBG_OUTPUT("Program has ended successfully!");

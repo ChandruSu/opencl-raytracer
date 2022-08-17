@@ -15,7 +15,8 @@ namespace sunstorm
       SSRT_DBG_OUTPUT("Created Compute Program: " << name);
     }
 
-    void ComputeProgram::build() const {
+    void ComputeProgram::build() const 
+    {
       cl_int error = clBuildProgram(programId, 0, NULL, NULL, NULL, NULL);
 
       // prints build info log on failure.
@@ -30,8 +31,19 @@ namespace sunstorm
     
     ComputeProgram::~ComputeProgram()
     {
+      for (size_t i = 0; i < kernels.size(); i++) {
+        delete kernels[i];
+      }
+      
       ComputeHandler::handleError(clReleaseProgram(programId));
       SSRT_DBG_OUTPUT("Destroyed Compute Program: " << name);
+    }
+
+    ComputeKernel* ComputeProgram::createKernel(std::string kernelName) 
+    {
+      ComputeKernel* kernel = new ComputeKernel(kernelName, this);
+      kernels.push_back(kernel);
+      return kernel;
     }
   }
 }

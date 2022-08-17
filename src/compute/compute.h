@@ -27,6 +27,7 @@ namespace sunstorm
      */
     const char* getErrorString(cl_int error);
 
+    // forward declaration
     class ComputeProgram;
     class ComputeKernel;
 
@@ -110,15 +111,34 @@ namespace sunstorm
     {
     private:
       std::string name;
-      std::vector<int> kernels;
+      std::vector<ComputeKernel*> kernels;
       cl_program programId;
 
     public:
       ComputeProgram(std::string name, std::string source);
 
+      ~ComputeProgram();
+
       void build() const;
 
-      ~ComputeProgram();
+      inline cl_program getProgram() const {
+        return programId;
+      }
+
+      ComputeKernel* createKernel(std::string kernelName);
+    };
+
+    class ComputeKernel
+    {
+    private:
+      cl_kernel kernelId;
+      std::string name;
+      ComputeProgram* program;
+
+    public:
+      ComputeKernel(std::string kernelName, ComputeProgram* program);
+
+      ~ComputeKernel();
     };
   }
 }
