@@ -34,6 +34,10 @@ namespace sunstorm
     
     ComputeHandler::~ComputeHandler()
     {
+      for (size_t i = 0; i < programs.size(); i++) {
+        delete programs[i];
+      }
+
       // releases queues
       for (size_t i = 0; i < queues.size(); i++) {
         handleError(clReleaseCommandQueue(queues[i]));
@@ -54,7 +58,14 @@ namespace sunstorm
       return queue;
     }
     
-    void ComputeHandler::handleError(cl_int errorId) const
+    ComputeProgram* ComputeHandler::createProgram(std::string filepath)
+    {
+      ComputeProgram* program = new ComputeProgram(filepath, io::readFile(filepath));
+      programs.push_back(program);
+      return program;
+    }
+    
+    void ComputeHandler::handleError(cl_int errorId)
     {
       if (errorId != CL_SUCCESS) {
         throw std::runtime_error(std::string("OpenCL Error: ") + getErrorString(errorId));

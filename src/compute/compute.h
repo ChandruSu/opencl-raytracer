@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #define GLEW_STATIC
@@ -12,6 +13,7 @@
 #include <GLEW/wglew.h>
 
 #include "../common.h"
+#include "../utils/utils.h"
 
 namespace sunstorm
 {
@@ -25,6 +27,9 @@ namespace sunstorm
      */
     const char* getErrorString(cl_int error);
 
+    class ComputeProgram;
+    class ComputeKernel;
+
     class ComputeHandler
     {
     private:
@@ -33,6 +38,7 @@ namespace sunstorm
       cl_context context;
 
       std::vector<cl_command_queue> queues;
+      std::vector<ComputeProgram*> programs;
 
     public:
       static ComputeHandler* global;
@@ -57,11 +63,12 @@ namespace sunstorm
       cl_command_queue createQueue(cl_command_queue_properties props);
 
       /**
-       * @brief Decodes OpenCL error code and throws error.
+       * @brief Create a Program object from source file.
        * 
-       * @param errorId CL error code
+       * @param filepath Path to source file
+       * @return ComputeProgram* 
        */
-      void handleError(cl_int errorId) const;
+      ComputeProgram* createProgram(std::string filepath);
 
       /**
        * @brief Get a Command Queue by index
@@ -90,6 +97,28 @@ namespace sunstorm
       inline cl_device_id getDevice() const {
         return deviceId;
       }
+      
+      /**
+       * @brief Decodes OpenCL error code and throws error.
+       * 
+       * @param errorId CL error code
+       */
+      static void handleError(cl_int errorId);
+    };
+
+    class ComputeProgram
+    {
+    private:
+      std::string name;
+      std::vector<int> kernels;
+      cl_program programId;
+
+    public:
+      ComputeProgram(std::string name, std::string source);
+
+      void build() const;
+
+      ~ComputeProgram();
     };
   }
 }

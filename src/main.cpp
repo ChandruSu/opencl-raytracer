@@ -11,12 +11,12 @@ int main(int argc, char const *argv[])
   {
     cmp::ComputeHandler handler = cmp::ComputeHandler();
     handler.createQueue(NULL);
+    handler.createProgram("addVec.cl");
   }
   catch(const std::exception& e)
   {
     std::cerr << e.what() << '\n';
   }
-  
 
   SSRT_DBG_OUTPUT("Program has ended successfully!");
   return 0;
