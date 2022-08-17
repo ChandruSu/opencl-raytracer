@@ -29,6 +29,7 @@ namespace sunstorm
       handleError(error);
 
       global = this;
+      SSRT_DBG_OUTPUT("Created Compute Handler");
     }
     
     ComputeHandler::~ComputeHandler()
@@ -40,6 +41,8 @@ namespace sunstorm
       
       // releases context from memory
       handleError(clReleaseContext(context));
+
+      SSRT_DBG_OUTPUT("Destroyed Compute Handler");
     }
     
     cl_command_queue ComputeHandler::createQueue(cl_command_queue_properties props)

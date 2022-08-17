@@ -18,6 +18,6 @@ int main(int argc, char const *argv[])
   }
   
 
-  std::cout << "Program has ended successfully!" << std::endl;
+  SSRT_DBG_OUTPUT("Program has ended successfully!");
   return 0;
 }

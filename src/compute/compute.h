@@ -1,3 +1,4 @@
+#pragma once
 
 #include <iostream>
 #include <stdexcept>
@@ -9,6 +10,8 @@
 #include <CL/cl_gl.h>
 #include <GLEW/glew.h>
 #include <GLEW/wglew.h>
+
+#include "../common.h"
 
 namespace sunstorm
 {
