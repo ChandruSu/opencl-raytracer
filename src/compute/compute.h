@@ -155,8 +155,10 @@ namespace sunstorm
     class ComputeKernel
     {
     private:
-      cl_kernel kernelId;
       std::string name;
+      std::vector<cl_mem> memoryObjects;
+
+      cl_kernel kernelId;
       ComputeProgram* program;
 
     public:
@@ -173,6 +175,67 @@ namespace sunstorm
        *  and CL memory objects.
        */
       ~ComputeKernel();
+
+      /**
+       * @brief Create an OpenCL Buffer object and attaches it as a kernel parameter.
+       * 
+       * @param index Index of parameter to pass buffer
+       * @param flags Memory object flags
+       * @param size Size of buffer
+       * @return cl_mem
+       */
+      cl_mem createBuffer(cl_uint index, cl_mem_flags flags, size_t size);
+
+      /**
+       * @brief Create an OpenCL Buffer object from an OpenGL vertex buffer object and
+       *  then attaches it as a kernel parameter.
+       * 
+       * @param index Index of parameter to pass buffer
+       * @param flags Memory object flags
+       * @param bufferId Size of buffer
+       * @return cl_mem 
+       */
+      cl_mem createSharedBuffer(cl_uint index, cl_mem_flags flags, GLuint bufferId);
+
+      /**
+       * @brief Create an OpenCL Image object and attaches it as kernel parameter
+       * 
+       * @param index Index of parameter to pass image
+       * @param flags Memeory object flags
+       * @param format Image format struct
+       * @param descriptor Image descriptor struct
+       * @return cl_mem 
+       */
+      cl_mem createImage(cl_uint index, cl_mem_flags flags, cl_image_format format, cl_image_desc descriptor);
+
+      /**
+       * @brief Create an OpenCL Image object and attaches it as a kernel parameter.
+       * 
+       * @param index Index of parameter to pass image
+       * @param flags Memeory object flags
+       * @param target OpenGL texture target type
+       * @param mipLevel Mipmap level
+       * @param textureId OpenGL texture ID
+       * @return cl_mem 
+       */
+      cl_mem createSharedImage(cl_uint index, cl_mem_flags flags, GLenum target, GLint mipLevel, GLuint textureId);
+
+      /**
+       * @brief Attach OpenCL memory buffer as kernel parameter at index
+       * 
+       * @param position Index of parameter
+       * @param memory Memory object
+       */
+      void setMemoryArg(cl_uint position, cl_mem memory);
+
+      /**
+       * @brief Get the Kernel object
+       * 
+       * @return cl_kernel 
+       */
+      inline cl_kernel getKernel() const {
+        return kernelId;
+      }
     };
   }
 }
