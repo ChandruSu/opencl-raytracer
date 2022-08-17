@@ -115,16 +115,40 @@ namespace sunstorm
       cl_program programId;
 
     public:
+      /**
+       * @brief Construct a new Compute Program object to extract kernel
+       *  functions from.
+       * 
+       * @param name Name of program file
+       * @param source Source code for program
+       */
       ComputeProgram(std::string name, std::string source);
 
+      /**
+       * @brief Destroy the Compute Program object and attached kernels.
+       */
       ~ComputeProgram();
 
+      /**
+       * @brief Builds compute program and prints output log.
+       */
       void build() const;
 
+      /**
+       * @brief Get the Program object.
+       * 
+       * @return cl_program 
+       */
       inline cl_program getProgram() const {
         return programId;
       }
 
+      /**
+       * @brief Create a Kernel object from the program.
+       * 
+       * @param kernelName Name of kernel function
+       * @return ComputeKernel*
+       */
       ComputeKernel* createKernel(std::string kernelName);
     };
 
@@ -136,8 +160,18 @@ namespace sunstorm
       ComputeProgram* program;
 
     public:
+      /**
+       * @brief Construct a new Compute Kernel object
+       * 
+       * @param kernelName Kernel name
+       * @param program Program
+       */
       ComputeKernel(std::string kernelName, ComputeProgram* program);
 
+      /**
+       * @brief Destroy the Compute Kernel object and cleanup attached buffers
+       *  and CL memory objects.
+       */
       ~ComputeKernel();
     };
   }

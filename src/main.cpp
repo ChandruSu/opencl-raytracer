@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
   }
   catch(const std::exception& e)
   {
-    std::cerr << e.what() << std::endl;
+    std::cerr << "[Error] " << e.what() << std::endl;
   }
 
   SSRT_DBG_OUTPUT("Program has ended successfully!");
