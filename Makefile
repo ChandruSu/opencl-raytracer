@@ -6,5 +6,8 @@ all:
 	cmake --build ${BUILD_DIR}
 	build/Debug/app.exe
 
+run:
+	build/Debug/app.exe
+
 clean:
 	rm -rf ${BUILD_DIR}
