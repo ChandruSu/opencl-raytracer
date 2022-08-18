@@ -44,11 +44,21 @@ class AddVec
 
 void run() 
 {
+  // Sets up graphics environment
+  gfx::Window window("Ray Tracer Test", 512, 512);
+
+  gfx::Shader shader = gfx::Shader("Basic");
+  shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/vert.glsl"));
+  shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/frag.glsl"));
+  shader.buildProgram();
+
+  // Sets up compute environment
   cmp::ComputeHandler handler = cmp::ComputeHandler();
   handler.createQueue(NULL);
   cmp::ComputeProgram* program = handler.createProgram("cl/addVec.cl");
   cmp::ComputeKernel* kernel = program->createKernel("vecAdd");
 
+  // --- Compute Test --- //
   const unsigned int n = 1024;
   AddVec addVec = AddVec(kernel, n);
 
@@ -72,10 +82,12 @@ void run()
   }
 
   std::cout << "Result = " << sum << ", True = " << (1024.0f * 1024.0f) << std::endl;
+  // -------------------- //
 
-  gfx::Window window("Ray Tracer Test", 512, 512);
-
+  // Main game loop
   while (!window.isClosed()) {
+    shader.bindProgram();
+    shader.unbindProgram();
     window.update();
   }
 }
@@ -83,14 +95,12 @@ void run()
 int main(int argc, char const *argv[])
 {
   bool success = true;
-  try
-  {
+
+  try {
     run();
-  }
-  catch(const std::exception& e)
-  {
-    success = false;
+  } catch(const std::exception& e) {
     std::cerr << "[Error] " << e.what() << std::endl;
+    success = false;
   }
 
   if (success) {

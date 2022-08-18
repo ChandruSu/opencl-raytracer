@@ -6,9 +6,13 @@
 #include <GLEW/wglew.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "../common.h"
 
@@ -98,5 +102,111 @@ namespace sunstorm
       static void resizeCallback(GLFWwindow* window, int width, int height);
     };
     
+    class Shader
+    {
+    private:
+      GLuint programId;
+      std::string name;
+      std::vector<GLuint> shaders;
+      std::map<std::string, GLuint> uniformLocations;
+
+      /**
+       * @brief Get the Uniform location of uniform from map.
+       * 
+       * @param name Name of uniform
+       * @return GLuint 
+       */
+      GLuint getUniformLocation(std::string name);
+
+    public:
+      /**
+       * @brief Construct a new empty Shader program object.
+       */
+      Shader(std::string name);
+
+      /**
+       * @brief Destroy the Shader program and attached shaders.
+       */
+      ~Shader();
+
+      /**
+       * @brief Builds program by linking subshaders and validating
+       *  the shader program.
+       */
+      void buildProgram() const;
+
+      /**
+       * @brief Create, compile and attache sub-shader to shader program.
+       * 
+       * @param shaderType Shader type i.e vertex, fragment, geometry
+       * @param source Source code for shader
+       */
+      void createShader(GLenum shaderType, std::string source);
+
+      /**
+       * @brief Binds this shader program to be used to render meshes.
+       */
+      void bindProgram() const;
+
+      /**
+       * @brief Binds the default program to render meshes.
+       */
+      void unbindProgram() const;
+
+      /**
+       * @brief Get the location of uniform by name and store it in map.
+       * 
+       * @param name Uniform name
+       */
+      void getUniform(std::string name);
+
+      /**
+       * @brief Set the value of a Uniform Int.
+       * 
+       * @param name 
+       * @param i Int
+       */
+      void setUniformInt(std::string name, int i);
+
+      /**
+       * @brief Set the value of a Uniform Float.
+       * 
+       * @param name 
+       * @param f Float
+       */
+      void setUniformFloat(std::string name, float f);
+      
+      /**
+       * @brief Set the value of a Uniform Vector2.
+       * 
+       * @param name 
+       * @param v GLM vector 2
+       */
+      void setUniformVector2(std::string name, glm::vec2 v);
+      
+      /**
+       * @brief Set the value of a Uniform Vector3.
+       * 
+       * @param name 
+       * @param v GLM vector 3
+       */
+      void setUniformVector3(std::string name, glm::vec3 v);
+      
+      /**
+       * @brief Set the value of a Uniform Vector4.
+       * 
+       * @param name 
+       * @param v GLM vector 4
+       */
+      void setUniformVector4(std::string name, glm::vec4 v);
+      
+      /**
+       * @brief Set the value of a Uniform Matrix4x4.
+       * 
+       * @param name 
+       * @param m GLM matrix 4x4
+       */
+      void setUniformMatrix4x4(std::string name, glm::mat4 m);
+    };
   }
 }
