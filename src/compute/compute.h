@@ -209,7 +209,8 @@ namespace sunstorm
       cl_mem createImage(cl_uint index, cl_mem_flags flags, cl_image_format format, cl_image_desc descriptor);
 
       /**
-       * @brief Create an OpenCL Image object and attaches it as a kernel parameter.
+       * @brief Create an OpenCL Image object from an OpenGL texture and attaches it as 
+       *    a kernel parameter.
        * 
        * @param index Index of parameter to pass image
        * @param flags Memeory object flags
@@ -219,6 +220,17 @@ namespace sunstorm
        * @return cl_mem 
        */
       cl_mem createSharedImage(cl_uint index, cl_mem_flags flags, GLenum target, GLint mipLevel, GLuint textureId);
+
+      /**
+       * @brief Create an OpenCL Renderbuffer object from an OpenGL Renderbuffer and
+       *    attaches it as a kernel parameter.
+       * 
+       * @param index Index of parameter to pass renderbuffer
+       * @param flags Memory object flags
+       * @param renderBufferId OpenGL renderbuffer ID
+       * @return cl_mem
+       */
+      cl_mem createSharedRenderbuffer(cl_uint index, cl_mem_flags flags, GLuint renderBufferId);
 
       /**
        * @brief Attach OpenCL memory buffer as kernel parameter at index

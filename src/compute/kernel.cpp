@@ -64,6 +64,16 @@ namespace sunstorm
       return image;
     }
     
+    cl_mem ComputeKernel::createSharedRenderbuffer(cl_uint index, cl_mem_flags flags, GLuint renderBufferId)
+    {
+      cl_int error;
+      cl_mem buf = clCreateFromGLRenderbuffer(ComputeHandler::global->getContext(), flags, renderBufferId, &error);
+      ComputeHandler::handleError(error);
+      setMemoryArg(index, buf);
+      memoryObjects.push_back(buf);
+      return buf;
+    }
+    
     void ComputeKernel::setMemoryArg(cl_uint position, cl_mem memory)
     {
       cl_int error = clSetKernelArg(kernelId, position, sizeof(cl_mem), &memory);

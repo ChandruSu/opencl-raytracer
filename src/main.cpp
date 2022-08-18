@@ -59,6 +59,7 @@ void run()
   cmp::ComputeKernel* kernel = program->createKernel("vecAdd");
 
   // --- Compute Test --- //
+  
   const unsigned int n = 1024;
   AddVec addVec = AddVec(kernel, n);
 
@@ -82,9 +83,9 @@ void run()
   }
 
   std::cout << "[Output] Result = " << sum << ", True = " << (1024.0f * 1024.0f) << std::endl;
-  // -------------------- //
 
   // --- Display Quad --- //
+
   float vertices[] = {
     -1.0,  1.0, 0.0,
      1.0,  1.0, 0.0,
@@ -109,9 +110,9 @@ void run()
   mesh.createVertexBuffer(0, 3, vertices, 4);
   mesh.createVertexBuffer(1, 2, uvCoords, 4);
   mesh.createElementBuffer(indices);
-  // -------------------- //
 
   // -- Main game loop -- //
+
   while (!window.isClosed()) {
     window.update();
     shader.bindProgram();
