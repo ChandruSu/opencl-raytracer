@@ -81,19 +81,50 @@ void run()
     sum += c[i];
   }
 
-  std::cout << "Result = " << sum << ", True = " << (1024.0f * 1024.0f) << std::endl;
+  std::cout << "[Output] Result = " << sum << ", True = " << (1024.0f * 1024.0f) << std::endl;
   // -------------------- //
 
-  // Main game loop
+  // --- Display Quad --- //
+  float vertices[] = {
+    -1.0,  1.0, 0.0,
+     1.0,  1.0, 0.0,
+    -1.0, -1.0, 0.0,
+     1.0, -1.0, 0.0,
+  };
+
+  float uvCoords[] = {
+    0.0, 0.0,
+    0.0, 1.0,
+    1.0, 0.0,
+    1.0, 1.0,
+  };
+
+  unsigned short indices[] = {
+    0, 2, 1,
+    1, 2, 3,
+  };
+
+  gfx::Mesh mesh = gfx::Mesh("quad");
+  mesh.setVertexCount(6);
+  mesh.createVertexBuffer(0, 3, vertices, 4);
+  mesh.createVertexBuffer(1, 2, uvCoords, 4);
+  mesh.createElementBuffer(indices);
+  // -------------------- //
+
+  // -- Main game loop -- //
   while (!window.isClosed()) {
-    shader.bindProgram();
-    shader.unbindProgram();
     window.update();
+    shader.bindProgram();
+    mesh.bindMesh();
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
+    mesh.unbindMesh();
+    shader.unbindProgram();
   }
 }
 
 int main(int argc, char const *argv[])
 {
+  SSRT_DBG_OUTPUT("Program has been initialized successfully!");
   bool success = true;
 
   try {

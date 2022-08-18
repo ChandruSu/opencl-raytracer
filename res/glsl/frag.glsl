@@ -1,10 +1,13 @@
-#version 150
 
-in vec2 uvCoord;
+#version 300 es
 
-out vec4 fragColour;
+precision highp float;
+precision highp int;
 
-void main()
-{
-  fragColour = vec4(uvCoord.x, 0.0, uvCoord.y, 1.0);
+in vec2 uv;
+
+out vec4 fragColor;
+
+void main() {
+  fragColor = vec4(uv.x, 0.0, uv.y, 1.0);
 }

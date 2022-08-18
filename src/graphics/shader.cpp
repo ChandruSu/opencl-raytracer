@@ -8,7 +8,7 @@ namespace sunstorm
     Shader::Shader(std::string name) : name(name)
     {
       programId = glCreateProgram();
-      SSRT_DBG_OUTPUT("Created shader program: " << name);
+      SSRT_DBG_OUTPUT("Created Shader program: " << name);
     }
     
     Shader::~Shader()
@@ -19,7 +19,7 @@ namespace sunstorm
       }
       
       glDeleteProgram(programId);
-      SSRT_DBG_OUTPUT("Destroyed shader program: " << name);
+      SSRT_DBG_OUTPUT("Destroyed Shader program: " << name);
     }
 
     void Shader::createShader(GLenum shaderType, std::string source)

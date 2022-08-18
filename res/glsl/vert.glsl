@@ -1,11 +1,15 @@
-#version 150
 
-in vec3 pos;
-in vec2 uv;
+#version 300 es
 
-out vec2 uvCoord;
+precision highp float;
+precision highp int;
+
+layout(location = 0) in vec3 vertex;
+layout(location = 1) in vec2 texCoord;
+
+out vec2 uv;
 
 void main() {
-  uvCoord = uv;
-  gl_Position = vec4(pos, 1.0);
+  uv = texCoord;
+  gl_Position = vec4(vertex * 0.95, 1.0);
 }

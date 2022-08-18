@@ -208,5 +208,86 @@ namespace sunstorm
        */
       void setUniformMatrix4x4(std::string name, glm::mat4 m);
     };
+
+    class Mesh
+    {
+    private:
+      GLuint vaoId;
+      GLuint elementBufferId;
+      int vertexCount;
+      std::string name;
+      std::vector<GLuint> vbos;
+
+    public:
+      /**
+       * @brief Construct a new Mesh object and Vertex array object to store
+       *    vertex data.
+       * 
+       * @param name Mesh name
+       */
+      Mesh(std::string name);
+
+      /**
+       * @brief Destroy the Mesh object and delete attached Vertex buffer
+       *    objects.
+       */
+      ~Mesh();
+
+      /**
+       * @brief Binds Vertex arrays and element index buffer so that mesh can
+       *    be drawn with glDrawElements
+       */
+      void bindMesh() const;
+
+      /**
+       * @brief Unbinds Vertex arrays and uses default element index buffer.
+       */
+      void unbindMesh() const;
+
+      /**
+       * @brief Create a Vertex Buffer object and stores floating point vertex data
+       *    and binds it to vertex attribute for shader input.
+       * 
+       * @param pos Vertex attribute position index
+       * @param dim Vertex vector dimensions
+       * @param data Float data
+       * @param size Number of vertices
+       */
+      void createVertexBuffer(int pos, int dim, GLfloat* data, GLsizeiptr size);
+
+      /**
+       * @brief Create an Element Buffer object.
+       * 
+       * @param data Element indices
+       */
+      void createElementBuffer(GLushort* data);
+
+      /**
+       * @brief Get the Element Buffer Id
+       * 
+       * @return GLuint 
+       */
+      inline GLuint getElementBufferId() const {
+        return elementBufferId;
+      }
+    
+      /**
+       * @brief Set the Vertex Count
+       * 
+       * @param vertexCount 
+       */
+      inline void setVertexCount(int vertexCount) {
+        this->vertexCount = vertexCount;
+      }
+
+      /**
+       * @brief Get the Vertex Count
+       * 
+       * @return int 
+       */
+      inline int getVertexCount() const {
+        return vertexCount;
+      }
+    };
   }
 }

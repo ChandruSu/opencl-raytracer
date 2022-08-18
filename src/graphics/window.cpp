@@ -77,7 +77,7 @@ namespace sunstorm
       const void* userParam)
     {
       if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
-        std::fprintf(stderr, "GL CALLBACK: id=0x%x, type=0x%x, severity=0x%x, message='%s'\n", id, type, severity, message);
+        std::fprintf(stderr, "[Error] GL Callback: id=0x%x, type=0x%x, severity=0x%x, message='%s'\n", id, type, severity, message);
       }
     }
     
