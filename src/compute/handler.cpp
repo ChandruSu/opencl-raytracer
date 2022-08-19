@@ -25,7 +25,7 @@ namespace sunstorm
       };
 
       cl_int error;
-      context = clCreateContext(NULL, 1, &deviceId, NULL, NULL, &error);
+      context = clCreateContext(properties, 1, &deviceId, NULL, NULL, &error);
       handleError(error);
 
       global = this;
