@@ -8,6 +8,25 @@
 
 using namespace sunstorm;
 
+float vertices[] = {
+  -1.0,  1.0, 0.0,
+  1.0,  1.0, 0.0,
+  -1.0, -1.0, 0.0,
+  1.0, -1.0, 0.0,
+};
+
+float uvCoords[] = {
+  0.0, 1.0,
+  1.0, 1.0,
+  0.0, 0.0,
+  1.0, 0.0,
+};
+
+unsigned short indices[] = {
+  0, 2, 1,
+  1, 2, 3,
+};
+
 class DrawScreen
 {
   private:
@@ -52,8 +71,8 @@ void run()
   gfx::Window window("Ray Tracer Test", w, h);
 
   gfx::Shader shader = gfx::Shader("Basic");
-  shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/vert.glsl"));
-  shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/frag.glsl"));
+  shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/base_vert.glsl"));
+  shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/base_frag.glsl"));
   shader.buildProgram();
   shader.getUniform("tex");
 
@@ -81,25 +100,6 @@ void run()
 
   // --- Display Quad --- //
 
-  float vertices[] = {
-    -1.0,  1.0, 0.0,
-     1.0,  1.0, 0.0,
-    -1.0, -1.0, 0.0,
-     1.0, -1.0, 0.0,
-  };
-
-  float uvCoords[] = {
-    0.0, 0.0,
-    0.0, 1.0,
-    1.0, 0.0,
-    1.0, 1.0,
-  };
-
-  unsigned short indices[] = {
-    0, 2, 1,
-    1, 2, 3,
-  };
-
   gfx::Mesh mesh = gfx::Mesh("quad");
   mesh.setVertexCount(6);
   mesh.createVertexBuffer(0, 3, vertices, 4);
@@ -126,6 +126,114 @@ void run()
   }
 }
 
+void run2()
+{
+  int w = 512, h = 512;
+  // -- Setup Graphics -- //
+
+  gfx::Window window("Ray Tracer Test", w, h);
+
+  gfx::Shader shader = gfx::Shader("Basic");
+  shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/base_vert.glsl"));
+  shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/base_frag.glsl"));
+  shader.buildProgram();
+  shader.getUniform("tex");
+
+  gfx::Shader post = gfx::Shader("Post Processing");
+  post.createShader(GL_VERTEX_SHADER, io::readFile("glsl/postproc_vert.glsl"));
+  post.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/postproc_frag.glsl"));
+  post.buildProgram();
+  post.getUniform("tex");
+
+  // --- Display Quad --- //
+
+  gfx::Mesh mesh = gfx::Mesh("quad");
+  mesh.setVertexCount(6);
+  mesh.createVertexBuffer(0, 3, vertices, 4);
+  mesh.createVertexBuffer(1, 2, uvCoords, 4);
+  mesh.createElementBuffer(indices);
+
+  gfx::Texture texture = *io::readTextureFile("img/texture.jpg");
+
+  // --- Test Mesh --- //
+
+  float t_vertices[] = {
+    -1.0, -1.0, 0.0,
+     1.0, -1.0, 0.0,
+     0.0, 1.0, 0.0,
+  };
+
+  float t_uvCoords[] = {
+    0.0, 0.0,
+    1.0, 0.0,
+    0.5, 1.0,
+  };
+
+  unsigned short t_indices[] = {
+    0, 1, 2
+  };
+
+  gfx::Mesh triangle = gfx::Mesh("tri");
+  triangle.setVertexCount(3);
+  triangle.createVertexBuffer(0, 3, t_vertices, 3);
+  triangle.createVertexBuffer(1, 2, t_uvCoords, 3);
+  triangle.createElementBuffer(t_indices);
+
+  // --- Framebuffers --- //
+
+  gfx::Texture colour = gfx::Texture("colour", GL_TEXTURE_2D);
+  colour.bind(0);
+  colour.storeTexture2D(GL_RGB, w, h, 0, nullptr, GL_RGBA8);
+  colour.genMipmaps();
+  colour.unbind(0);
+
+  gfx::Renderbuffer rb = gfx::Renderbuffer(w, h, GL_DEPTH24_STENCIL8);
+  rb.bindRenderbuffer();
+  rb.unbindRenderbuffer();
+
+  gfx::Framebuffer fbo = gfx::Framebuffer();
+  fbo.bindFramebuffer();
+  fbo.attachTexture(&colour, 0);
+  fbo.attachRenderbuffer(&rb, GL_DEPTH_STENCIL_ATTACHMENT);
+  fbo.unbindFramebuffer();
+  fbo.complete();
+
+  // -- Main game loop -- //
+  
+  while (!window.isClosed()) 
+  {
+    window.update();
+
+    // draw preprocessed
+
+    fbo.bindFramebuffer();
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    shader.bindProgram();
+    shader.setUniformTexture("tex", 0);
+    texture.bind(0);
+
+    triangle.bindMesh();
+    glDrawElements(GL_TRIANGLES, triangle.getVertexCount(), GL_UNSIGNED_SHORT, 0);
+    triangle.unbindMesh();
+
+    shader.unbindProgram();
+    fbo.unbindFramebuffer();
+
+    // draw final
+
+    post.bindProgram();
+    post.setUniformTexture("tex", 0);
+    colour.bind(0);
+    
+    mesh.bindMesh();
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
+    mesh.unbindMesh();
+    
+    colour.unbind(0);
+    post.unbindProgram();
+  }
+}
+
 /**
  * @brief Main method - program starts here.
  */
@@ -135,7 +243,7 @@ int main(int argc, char const *argv[])
   bool success = true;
 
   try {
-    run();
+    run2();
   } catch(const std::exception& e) {
     std::cerr << "[Error] " << e.what() << std::endl;
     success = false;

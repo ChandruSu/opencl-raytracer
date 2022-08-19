@@ -366,6 +366,66 @@ namespace sunstorm
       inline GLuint getTextureId() const {
         return textureId;
       }
+
+      /**
+       * @brief Get the Texture Target
+       * 
+       * @return GLenum 
+       */
+      inline GLenum getTarget() const {
+        return target;
+      }
+    };
+
+    class Renderbuffer
+    {
+    private:
+      GLuint renderbufferId;
+      int width;
+      int height;
+      GLenum internalFormat;
+
+    public:
+      Renderbuffer(int width, int height, GLenum internalFormat);
+
+      ~Renderbuffer();
+      
+      void bindRenderbuffer() const;
+
+      void unbindRenderbuffer() const;
+
+      inline int getRenderbufferId() const {
+        return renderbufferId;
+      }
+
+      inline int getWidth() const {
+        return width;
+      }
+
+      inline int getHeight() const {
+        return height;
+      }
+    };
+
+    class Framebuffer
+    {
+    private:
+      GLuint framebufferId;
+
+    public:
+      Framebuffer();
+
+      ~Framebuffer();
+
+      void bindFramebuffer() const;
+
+      void unbindFramebuffer() const;
+
+      void attachTexture(Texture* texture, int attachmentIndex) const;
+
+      void attachRenderbuffer(Renderbuffer* renderBuffer, GLenum target) const;
+
+      void complete() const;
     };
   }
 }
