@@ -302,24 +302,67 @@ namespace sunstorm
     {
     private:
       GLuint textureId;
-
-    public:
       GLenum target;
       std::string name;
+
+    public:
+      /**
+       * @brief Construct a new empty Texture.
+       * 
+       * @param name texture name
+       * @param type texture target type
+       */
       Texture(std::string name, GLenum type);
       
+      /**
+       * @brief Destroy the Texture object from memory.
+       */
       ~Texture();
 
+      /**
+       * @brief Bind texture to specified texture slot.
+       * 
+       * @param i Texture slot
+       */
       void bind(int i) const;
       
+      /**
+       * @brief Unbind texture from specified texture slot.
+       * 
+       * @param i Texture slot
+       */
       void unbind(int i) const;
 
+      /**
+       * @brief Set OpenGL integer texture parameters.
+       * 
+       * @param parameterName Parameter name enum
+       * @param value Integer parameter value 
+       */
       void setTexParamI(GLenum parameterName, GLint value) const;
 
+      /**
+       * @brief Generate mip maps using specified mip levels.
+       */
       void genMipmaps() const;
 
+      /**
+       * @brief Store 2D texture data into OpenGL texture buffer.
+       * 
+       * @param format Texture format
+       * @param w Width in pixels
+       * @param h Height in pixels
+       * @param level Mip level
+       * @param image Image data pointer
+       * @param internalFormat Pixel format
+       */
       void storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint internalFormat) const;
       
+      /**
+       * @brief Get the Texture Id
+       * 
+       * @return GLuint 
+       */
       inline GLuint getTextureId() const {
         return textureId;
       }

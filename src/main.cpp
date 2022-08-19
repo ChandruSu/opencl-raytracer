@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <chrono>
 
 #include "common.h"
 #include "compute/compute.h"
@@ -23,10 +24,11 @@ class DrawScreen
       clSetKernelArg(k->getKernel(), 2, sizeof(unsigned int), &height);
     }
     
-    void execute(size_t* localSize, size_t* globalSize)
+    void execute(float time, size_t* localSize, size_t* globalSize)
     {
       cl_int error = CL_SUCCESS;
       cl_command_queue queue = cmp::ComputeHandler::global->getQueue(0);
+      clSetKernelArg(k->getKernel(), 3, sizeof(float), &time);
       
       error = clEnqueueAcquireGLObjects(queue, 1, &m_image, 0, NULL, NULL);
       cmp::ComputeHandler::handleError(error);
@@ -42,9 +44,12 @@ class DrawScreen
 
 void run() 
 {
+  const int w = 512, h = 512;
+  float time = 0.0f;
+
   // -- Setup Graphics -- //
   
-  gfx::Window window("Ray Tracer Test", 512, 512);
+  gfx::Window window("Ray Tracer Test", w, h);
 
   gfx::Shader shader = gfx::Shader("Basic");
   shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/vert.glsl"));
@@ -53,9 +58,10 @@ void run()
   shader.getUniform("tex");
 
   // creates empty image for compute target
+
   gfx::Texture img = gfx::Texture("frame", GL_TEXTURE_2D);
   img.bind(0);
-  img.storeTexture2D(GL_RGBA, 512, 512, 0, nullptr, GL_RGBA8);
+  img.storeTexture2D(GL_RGBA, w, h, 0, nullptr, GL_RGBA8);
   img.genMipmaps();
   img.unbind(0);
   
@@ -68,10 +74,10 @@ void run()
 
   // --- Compute Test --- //
 
-  DrawScreen draw = DrawScreen(kernel, img.getTextureId(), 512, 512);
-  size_t globalSize[] = { 512, 512 };
+  DrawScreen draw = DrawScreen(kernel, img.getTextureId(), w, h);
+  size_t globalSize[] = { w, h };
   size_t localSize[] = { globalSize[0] / 64, globalSize[1] / 64 };
-  draw.execute(localSize, globalSize);
+  draw.execute(time, localSize, globalSize);
 
   // --- Display Quad --- //
 
@@ -101,10 +107,12 @@ void run()
   mesh.createElementBuffer(indices);
 
   // -- Main game loop -- //
-
   while (!window.isClosed()) 
   {
     window.update();
+    time = glfwGetTime();
+    draw.execute(time, localSize, globalSize);
+
     shader.bindProgram();
     shader.setUniformTexture("tex", 0);
     img.bind(0);
