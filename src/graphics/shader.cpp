@@ -137,5 +137,10 @@ namespace sunstorm
     {
       glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &m[0][0]);
     }
+
+    void Shader::setUniformTexture(std::string name, int textureLocation)
+    {
+      setUniformInt(name, textureLocation);
+    }
   }
 }

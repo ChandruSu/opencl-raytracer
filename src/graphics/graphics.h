@@ -207,6 +207,14 @@ namespace sunstorm
        * @param m GLM matrix 4x4
        */
       void setUniformMatrix4x4(std::string name, glm::mat4 m);
+      
+      /**
+       * @brief Set the Uniform Texture sampler to active texture location.
+       * 
+       * @param name
+       * @param textureLocation Index of active texture bound
+       */
+      void setUniformTexture(std::string name, int textureLocation);
     };
 
     class Mesh
@@ -287,6 +295,33 @@ namespace sunstorm
        */
       inline int getVertexCount() const {
         return vertexCount;
+      }
+    };
+
+    class Texture
+    {
+    private:
+      GLuint textureId;
+
+    public:
+      GLenum target;
+      std::string name;
+      Texture(std::string name, GLenum type);
+      
+      ~Texture();
+
+      void bind(int i) const;
+      
+      void unbind(int i) const;
+
+      void setTexParamI(GLenum parameterName, GLint value) const;
+
+      void genMipmaps() const;
+
+      void storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint internalFormat) const;
+      
+      inline GLuint getTextureId() const {
+        return textureId;
       }
     };
   }

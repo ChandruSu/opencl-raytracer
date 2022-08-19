@@ -51,7 +51,10 @@ void run()
   shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/vert.glsl"));
   shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/frag.glsl"));
   shader.buildProgram();
+  shader.getUniform("tex");
 
+  gfx::Texture* img = io::readTextureFile("img/texture.jpg");
+  
   // Sets up compute environment
   cmp::ComputeHandler handler = cmp::ComputeHandler();
   handler.createQueue(NULL);
@@ -59,7 +62,7 @@ void run()
   cmp::ComputeKernel* kernel = program->createKernel("vecAdd");
 
   // --- Compute Test --- //
-  
+
   const unsigned int n = 1024;
   AddVec addVec = AddVec(kernel, n);
 
@@ -115,12 +118,17 @@ void run()
 
   while (!window.isClosed()) {
     window.update();
+    img->bind(0);
     shader.bindProgram();
+    shader.setUniformTexture("tex", 0);
     mesh.bindMesh();
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
     mesh.unbindMesh();
     shader.unbindProgram();
+    img->unbind(0);
   }
+
+  delete img;
 }
 
 int main(int argc, char const *argv[])
