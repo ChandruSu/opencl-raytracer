@@ -345,19 +345,11 @@ namespace sunstorm
        * @brief Generate mip maps using specified mip levels.
        */
       void genMipmaps() const;
-
-      /**
-       * @brief Store 2D texture data into OpenGL texture buffer.
-       * 
-       * @param format Texture format
-       * @param w Width in pixels
-       * @param h Height in pixels
-       * @param level Mip level
-       * @param image Image data pointer
-       * @param internalFormat Pixel format
-       */
-      void storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint internalFormat) const;
       
+      void storeTexture2D(int w, int h, int level, unsigned char* image) const;
+      
+      void storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint type, GLint internalFormat) const;
+
       /**
        * @brief Get the Texture Id
        * 
@@ -421,7 +413,7 @@ namespace sunstorm
 
       void unbindFramebuffer() const;
 
-      void attachTexture(Texture* texture, int attachmentIndex) const;
+      void attachTexture(Texture* texture, GLenum attachment) const;
 
       void attachRenderbuffer(Renderbuffer* renderBuffer, GLenum target) const;
 

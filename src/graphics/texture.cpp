@@ -47,9 +47,14 @@ namespace sunstorm
       glGenerateMipmap(target);
     }
     
-    void Texture::storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint internalFormat) const
+    void Texture::storeTexture2D(int w, int h, int level, unsigned char* image) const
     {
-      glTexImage2D(target, level, internalFormat, w, h, 0, format, GL_UNSIGNED_BYTE, image);
+      glTexImage2D(target, level, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    }
+
+    void Texture::storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint type, GLint internalFormat) const
+    {
+      glTexImage2D(target, level, internalFormat, w, h, 0, format, type, image);
     }
   }
 }

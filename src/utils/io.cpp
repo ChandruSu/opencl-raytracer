@@ -32,7 +32,7 @@ namespace sunstorm
 
       gfx::Texture* texture = new gfx::Texture(filepath, GL_TEXTURE_2D);
       texture->bind(0);
-      texture->storeTexture2D(GL_RGBA, w, h, 0, image, GL_RGBA8);
+      texture->storeTexture2D(w, h, 0, image);
       texture->genMipmaps();
       texture->unbind(0);
       stbi_image_free(image);

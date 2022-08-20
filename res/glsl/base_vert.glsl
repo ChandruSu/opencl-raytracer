@@ -9,7 +9,9 @@ layout(location = 1) in vec2 texCoord;
 
 out vec2 uv;
 
+uniform mat4 projection;
+
 void main() {
   uv = texCoord;
-  gl_Position = vec4(vertex * 0.95, 1.0);
+  gl_Position = projection * vec4(vertex * 0.95, 1.0);
 }

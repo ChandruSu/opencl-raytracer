@@ -6,6 +6,9 @@
 #include "compute/compute.h"
 #include "graphics/graphics.h"
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+
 using namespace sunstorm;
 
 float vertices[] = {
@@ -80,7 +83,7 @@ void run()
 
   gfx::Texture img = gfx::Texture("frame", GL_TEXTURE_2D);
   img.bind(0);
-  img.storeTexture2D(GL_RGBA, w, h, 0, nullptr, GL_RGBA8);
+  img.storeTexture2D(w, h, 0, nullptr);
   img.genMipmaps();
   img.unbind(0);
   
@@ -110,7 +113,7 @@ void run()
   while (!window.isClosed()) 
   {
     window.update();
-    time = glfwGetTime();
+    time = (float) glfwGetTime();
     draw.execute(time, localSize, globalSize);
 
     shader.bindProgram();
@@ -138,12 +141,14 @@ void run2()
   shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/base_frag.glsl"));
   shader.buildProgram();
   shader.getUniform("tex");
+  shader.getUniform("projection");
 
   gfx::Shader post = gfx::Shader("Post Processing");
   post.createShader(GL_VERTEX_SHADER, io::readFile("glsl/postproc_vert.glsl"));
   post.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/postproc_frag.glsl"));
   post.buildProgram();
   post.getUniform("tex");
+  post.getUniform("dep");
 
   // --- Display Quad --- //
 
@@ -158,9 +163,9 @@ void run2()
   // --- Test Mesh --- //
 
   float t_vertices[] = {
-    -1.0, -1.0, 0.0,
-     1.0, -1.0, 0.0,
-     0.0, 1.0, 0.0,
+    -1.0, -1.0, -10.0,
+     1.0, -1.0, -1.0,
+     0.0,  1.0, -1.0,
   };
 
   float t_uvCoords[] = {
@@ -183,23 +188,31 @@ void run2()
 
   gfx::Texture colour = gfx::Texture("colour", GL_TEXTURE_2D);
   colour.bind(0);
-  colour.storeTexture2D(GL_RGB, w, h, 0, nullptr, GL_RGBA8);
+  colour.storeTexture2D(w, h, 0, nullptr);
   colour.genMipmaps();
   colour.unbind(0);
 
-  gfx::Renderbuffer rb = gfx::Renderbuffer(w, h, GL_DEPTH24_STENCIL8);
-  rb.bindRenderbuffer();
-  rb.unbindRenderbuffer();
+  // gfx::Renderbuffer rb = gfx::Renderbuffer(w, h, GL_DEPTH24_STENCIL8);
+  // rb.bindRenderbuffer();
+  // rb.unbindRenderbuffer();
+
+  gfx::Texture depth = gfx::Texture("depth", GL_TEXTURE_2D);
+  depth.bind(0);
+  depth.storeTexture2D(GL_DEPTH_STENCIL, w, h, 0, nullptr, GL_UNSIGNED_INT_24_8, GL_DEPTH24_STENCIL8);
+  depth.genMipmaps();
+  depth.unbind(0);
 
   gfx::Framebuffer fbo = gfx::Framebuffer();
   fbo.bindFramebuffer();
-  fbo.attachTexture(&colour, 0);
-  fbo.attachRenderbuffer(&rb, GL_DEPTH_STENCIL_ATTACHMENT);
+  fbo.attachTexture(&colour, GL_COLOR_ATTACHMENT0);
+  fbo.attachTexture(&depth, GL_DEPTH_STENCIL_ATTACHMENT);
   fbo.unbindFramebuffer();
   fbo.complete();
 
   // -- Main game loop -- //
   
+  glm::mat4 proj = glm::perspective(3.1415926f/3, window.getAspectRatio(), 0.001f, 1000.0f);
+
   while (!window.isClosed()) 
   {
     window.update();
@@ -209,6 +222,7 @@ void run2()
     fbo.bindFramebuffer();
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     shader.bindProgram();
+    shader.setUniformMatrix4x4("projection", proj);
     shader.setUniformTexture("tex", 0);
     texture.bind(0);
 
@@ -223,12 +237,15 @@ void run2()
 
     post.bindProgram();
     post.setUniformTexture("tex", 0);
+    post.setUniformTexture("dep", 1);
     colour.bind(0);
+    depth.bind(1);
     
     mesh.bindMesh();
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
     mesh.unbindMesh();
     
+    depth.unbind(1);
     colour.unbind(0);
     post.unbindProgram();
   }

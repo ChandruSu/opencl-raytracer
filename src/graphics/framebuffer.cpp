@@ -29,9 +29,9 @@ namespace sunstorm
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   
-    void Framebuffer::attachTexture(Texture* texture, int attachmentIndex) const
+    void Framebuffer::attachTexture(Texture* texture, GLenum attachment) const
     {
-      glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentIndex, texture->getTextureId(), 0);
+      glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture->getTextureId(), 0);
     }
   
     void Framebuffer::attachRenderbuffer(Renderbuffer* renderBuffer, GLenum target) const
