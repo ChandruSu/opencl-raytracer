@@ -346,8 +346,27 @@ namespace sunstorm
        */
       void genMipmaps() const;
       
+      /**
+       * @brief Store texture data or setup buffer for texture storage.
+       * 
+       * @param w Width of texture
+       * @param h Height of texture
+       * @param level Mip level
+       * @param image Image data (can be nullptr)
+       */
       void storeTexture2D(int w, int h, int level, unsigned char* image) const;
       
+      /**
+       * @brief Store texture data or setup buffer for texture storage. 
+       * 
+       * @param format Colour format of texture data
+       * @param w Width of texture
+       * @param h Height of texture
+       * @param level Mip level
+       * @param image Image data (can be nullptr)
+       * @param type Image data unit type
+       * @param internalFormat Pixel storage format
+       */
       void storeTexture2D(GLint format, int w, int h, int level, unsigned char* image, GLint type, GLint internalFormat) const;
 
       /**
@@ -378,22 +397,54 @@ namespace sunstorm
       GLenum internalFormat;
 
     public:
+      /**
+       * @brief Construct a new Renderbuffer object
+       * 
+       * @param width Width of the renderbuffer
+       * @param height Height of the renderbuffer
+       * @param internalFormat Format for each pixel
+       */
       Renderbuffer(int width, int height, GLenum internalFormat);
 
+      /**
+       * @brief Destroy the Renderbuffer object.
+       */
       ~Renderbuffer();
       
+      /**
+       * @brief Bind the renderbuffer.
+       * 
+       */
       void bindRenderbuffer() const;
 
+      /**
+       * @brief Unbind the renderbuffer.
+       */
       void unbindRenderbuffer() const;
 
-      inline int getRenderbufferId() const {
+      /**
+       * @brief Get the Renderbuffer Id
+       * 
+       * @return GLuint 
+       */
+      inline GLuint getRenderbufferId() const {
         return renderbufferId;
       }
 
+      /**
+       * @brief Get the Width of the renderbuffer.
+       * 
+       * @return int 
+       */
       inline int getWidth() const {
         return width;
       }
 
+      /**
+       * @brief Get the Height of the renderbuffer.
+       * 
+       * @return int 
+       */
       inline int getHeight() const {
         return height;
       }
@@ -405,19 +456,57 @@ namespace sunstorm
       GLuint framebufferId;
 
     public:
+      /**
+       * @brief Construct a new Framebuffer object.
+       */
       Framebuffer();
 
+      /**
+       * @brief Destroy the Framebuffer object (must destroy attachments separately).
+       */
       ~Framebuffer();
 
+      /**
+       * @brief Bind framebuffer as current framebuffer to be rendered to.
+       */
       void bindFramebuffer() const;
 
+      /**
+       * @brief Unbind this framebuffer and use default framebuffer (display buffer).
+       */
       void unbindFramebuffer() const;
 
+      /**
+       * @brief Attache texture 2D to framebuffer to store colour or depth output to
+       *    be sampled in multistage rendering or postprocessing.
+       * 
+       * @param texture Texture object
+       * @param attachment Attachment target
+       */
       void attachTexture(Texture* texture, GLenum attachment) const;
 
-      void attachRenderbuffer(Renderbuffer* renderBuffer, GLenum target) const;
+      /**
+       * @brief Attaches renderbuffer to framebuffer.
+       * 
+       * @param renderBuffer Renderbuffer object
+       * @param attachment Attachment target
+       */
+      void attachRenderbuffer(Renderbuffer* renderBuffer, GLenum attachment) const;
 
+      /**
+       * @brief Validate framebuffer and print error message to standard output if
+       *    attachments are invalid.
+       */
       void complete() const;
+
+      /**
+       * @brief Get the Framebuffer ID
+       * 
+       * @return GLuint 
+       */
+      inline GLuint getFramebufferId() const {
+        return framebufferId;
+      }
     };
   }
 }

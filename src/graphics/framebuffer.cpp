@@ -34,9 +34,9 @@ namespace sunstorm
       glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture->getTextureId(), 0);
     }
   
-    void Framebuffer::attachRenderbuffer(Renderbuffer* renderBuffer, GLenum target) const
+    void Framebuffer::attachRenderbuffer(Renderbuffer* renderBuffer, GLenum attachment) const
     {
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, target, GL_RENDERBUFFER, renderBuffer->getRenderbufferId());
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderBuffer->getRenderbufferId());
     }
   
     void Framebuffer::complete() const
