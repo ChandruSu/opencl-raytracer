@@ -19,5 +19,5 @@ void main() {
   vec4 colour = texture(tex, uv);
   float depth = texture(dep, uv).r;
   float floorDist = (2.0 * NEAR_PLANE * FAR_PLANE) / (FAR_PLANE + NEAR_PLANE - (2.0 * depth - 1.0) * (FAR_PLANE - NEAR_PLANE));
-  fragColor = vec4(floorDist/10.5);
+  fragColor = vec4(floorDist/4.0);
 }

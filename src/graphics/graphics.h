@@ -54,12 +54,30 @@ namespace sunstorm
       void update();
 
       /**
+       * @brief Get the Width of the window
+       * 
+       * @return int 
+       */
+      inline int getWidth() const {
+        return width;
+      }
+
+      /**
        * @brief Set the Width object
        * 
        * @param width 
        */
       inline void setWidth(int width) {
         this->width = width;
+      }
+
+      /**
+       * @brief Get the Height of the window
+       * 
+       * @return int 
+       */
+      inline int getHeight() const {
+        return height;
       }
       
       /**
@@ -454,12 +472,14 @@ namespace sunstorm
     {
     private:
       GLuint framebufferId;
+      int width;
+      int height;
 
     public:
       /**
        * @brief Construct a new Framebuffer object.
        */
-      Framebuffer();
+      Framebuffer(int height, int width);
 
       /**
        * @brief Destroy the Framebuffer object (must destroy attachments separately).
@@ -483,7 +503,7 @@ namespace sunstorm
        * @param texture Texture object
        * @param attachment Attachment target
        */
-      void attachTexture(Texture* texture, GLenum attachment) const;
+      void attachTexture(const Texture& texture, GLenum attachment) const;
 
       /**
        * @brief Attaches renderbuffer to framebuffer.
@@ -491,7 +511,7 @@ namespace sunstorm
        * @param renderBuffer Renderbuffer object
        * @param attachment Attachment target
        */
-      void attachRenderbuffer(Renderbuffer* renderBuffer, GLenum attachment) const;
+      void attachRenderbuffer(const Renderbuffer& renderBuffer, GLenum attachment) const;
 
       /**
        * @brief Validate framebuffer and print error message to standard output if
@@ -500,12 +520,45 @@ namespace sunstorm
       void complete() const;
 
       /**
+       * @brief Draw content of current framebuffer to target framebuffer.
+       * 
+       * @param target Target framebuffer
+       */
+      void drawTo(const Framebuffer& target) const;
+
+      /**
+       * @brief Draws content of current framebuffer to screen framebuffer.
+       * 
+       * @param width Width of viewport buffer
+       * @param height Height of viewport buffer
+       */
+      void draw(int width, int height) const;
+
+      /**
        * @brief Get the Framebuffer ID
        * 
        * @return GLuint 
        */
       inline GLuint getFramebufferId() const {
         return framebufferId;
+      }
+
+      /**
+       * @brief Get the Width of the frame
+       * 
+       * @return int 
+       */
+      inline int getWidth() const {
+        return width;
+      }
+
+      /**
+       * @brief Get the Height of the frame
+       * 
+       * @return int 
+       */
+      inline int getHeight() const {
+        return height;
       }
     };
   }

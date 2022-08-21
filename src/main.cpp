@@ -13,9 +13,9 @@ using namespace sunstorm;
 
 float vertices[] = {
   -1.0,  1.0, 0.0,
-  1.0,  1.0, 0.0,
+   1.0,  1.0, 0.0,
   -1.0, -1.0, 0.0,
-  1.0, -1.0, 0.0,
+   1.0, -1.0, 0.0,
 };
 
 float uvCoords[] = {
@@ -132,6 +132,7 @@ void run()
 void run2()
 {
   int w = 512, h = 512;
+  
   // -- Setup Graphics -- //
 
   gfx::Window window("Ray Tracer Test", w, h);
@@ -163,9 +164,9 @@ void run2()
   // --- Test Mesh --- //
 
   float t_vertices[] = {
-    -1.0, -1.0, -10.0,
-     1.0, -1.0, -1.0,
-     0.0,  1.0, -1.0,
+    -1.0, -1.0, -4.0,
+     1.0, -1.0, -3.0,
+     0.0,  1.0, -2.0,
   };
 
   float t_uvCoords[] = {
@@ -192,32 +193,28 @@ void run2()
   colour.genMipmaps();
   colour.unbind(0);
 
-  // gfx::Renderbuffer rb = gfx::Renderbuffer(w, h, GL_DEPTH24_STENCIL8);
-  // rb.bindRenderbuffer();
-  // rb.unbindRenderbuffer();
-
   gfx::Texture depth = gfx::Texture("depth", GL_TEXTURE_2D);
   depth.bind(0);
   depth.storeTexture2D(GL_DEPTH_STENCIL, w, h, 0, nullptr, GL_UNSIGNED_INT_24_8, GL_DEPTH24_STENCIL8);
   depth.genMipmaps();
   depth.unbind(0);
 
-  gfx::Framebuffer fbo = gfx::Framebuffer();
+  gfx::Framebuffer fbo = gfx::Framebuffer(w, h);
   fbo.bindFramebuffer();
-  fbo.attachTexture(&colour, GL_COLOR_ATTACHMENT0);
-  fbo.attachTexture(&depth, GL_DEPTH_STENCIL_ATTACHMENT);
+  fbo.attachTexture(colour, GL_COLOR_ATTACHMENT0);
+  fbo.attachTexture(depth, GL_DEPTH_STENCIL_ATTACHMENT);
   fbo.unbindFramebuffer();
   fbo.complete();
 
   // -- Main game loop -- //
   
-  glm::mat4 proj = glm::perspective(3.1415926f/3, window.getAspectRatio(), 0.001f, 1000.0f);
+  glm::mat4 proj = glm::perspective(glm::radians(60.0f), window.getAspectRatio(), 0.001f, 1000.0f);
 
   while (!window.isClosed()) 
   {
     window.update();
 
-    // draw preprocessed
+    // --- draw preprocessed
 
     fbo.bindFramebuffer();
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -225,29 +222,58 @@ void run2()
     shader.setUniformMatrix4x4("projection", proj);
     shader.setUniformTexture("tex", 0);
     texture.bind(0);
-
     triangle.bindMesh();
     glDrawElements(GL_TRIANGLES, triangle.getVertexCount(), GL_UNSIGNED_SHORT, 0);
     triangle.unbindMesh();
-
     shader.unbindProgram();
     fbo.unbindFramebuffer();
 
-    // draw final
+    // --- draw final
 
     post.bindProgram();
     post.setUniformTexture("tex", 0);
     post.setUniformTexture("dep", 1);
     colour.bind(0);
     depth.bind(1);
-    
     mesh.bindMesh();
     glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
     mesh.unbindMesh();
-    
     depth.unbind(1);
     colour.unbind(0);
     post.unbindProgram();
+
+    // glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo.getFramebufferId());
+    // glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    // glDrawBuffer(GL_BACK);
+    // glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+    // glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+  }
+}
+
+void run3()
+{
+  const int w = 512, h = 512;
+
+  /* --- Graphics setup --- */
+
+  gfx::Window window = gfx::Window("Ray Tracer | v0.0.1", w, h);
+
+  gfx::Texture colour = gfx::Texture("Colour Buffer", GL_TEXTURE_2D);
+  colour.bind(0);
+  colour.storeTexture2D(w, h, 0, nullptr);
+  colour.genMipmaps();
+  colour.unbind(0);
+
+  gfx::Framebuffer framebuffer = gfx::Framebuffer(w, h);
+  framebuffer.bindFramebuffer();
+  framebuffer.attachTexture(colour, GL_COLOR_ATTACHMENT0);
+  framebuffer.unbindFramebuffer();
+  framebuffer.complete();
+
+  while (!window.isClosed())
+  {
+    window.update();
+    framebuffer.draw(window.getWidth(), window.getHeight());
   }
 }
 

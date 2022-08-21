@@ -7,7 +7,7 @@ namespace sunstorm
   {
     // ----- Frame Buffer ----- //
 
-    Framebuffer::Framebuffer()
+    Framebuffer::Framebuffer(int width, int height) : width(width), height(height)
     {
       glGenFramebuffers(1, &framebufferId);
       SSRT_DBG_OUTPUT("Created Framebuffer");
@@ -29,14 +29,14 @@ namespace sunstorm
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
   
-    void Framebuffer::attachTexture(Texture* texture, GLenum attachment) const
+    void Framebuffer::attachTexture(const Texture& texture, GLenum attachment) const
     {
-      glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture->getTextureId(), 0);
+      glFramebufferTexture(GL_FRAMEBUFFER, attachment, texture.getTextureId(), 0);
     }
   
-    void Framebuffer::attachRenderbuffer(Renderbuffer* renderBuffer, GLenum attachment) const
+    void Framebuffer::attachRenderbuffer(const Renderbuffer& renderBuffer, GLenum attachment) const
     {
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderBuffer->getRenderbufferId());
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderBuffer.getRenderbufferId());
     }
   
     void Framebuffer::complete() const
@@ -48,6 +48,25 @@ namespace sunstorm
       if (status != GL_FRAMEBUFFER_COMPLETE) {
         std::cerr << "[Error] Invalid framebuffer! errCode=" << status << std::endl;
       }
+    }
+    
+    void Framebuffer::drawTo(const Framebuffer& target) const
+    {
+      glBindFramebuffer(GL_READ_BUFFER, framebufferId);
+      glBindFramebuffer(GL_DRAW_BUFFER, target.getFramebufferId());
+      glDrawBuffer(GL_BACK);
+      glBlitFramebuffer(0, 0, width, height, 0, 0, target.width, target.height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      glBindFramebuffer(GL_READ_BUFFER, 0);
+      glBindFramebuffer(GL_DRAW_BUFFER, 0);
+    }
+    
+    void Framebuffer::draw(int width, int height) const
+    {
+      glBindFramebuffer(GL_READ_BUFFER, framebufferId);
+      glBindFramebuffer(GL_DRAW_BUFFER, 0);
+      glDrawBuffer(GL_BACK);
+      glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      glBindFramebuffer(GL_READ_BUFFER, 0);
     }
 
     // ---- Render Buffers ---- //
