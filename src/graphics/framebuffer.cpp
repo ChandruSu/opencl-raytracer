@@ -52,21 +52,21 @@ namespace sunstorm
     
     void Framebuffer::drawTo(const Framebuffer& target) const
     {
-      glBindFramebuffer(GL_READ_BUFFER, framebufferId);
-      glBindFramebuffer(GL_DRAW_BUFFER, target.getFramebufferId());
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferId);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, target.getFramebufferId());
       glDrawBuffer(GL_BACK);
       glBlitFramebuffer(0, 0, width, height, 0, 0, target.width, target.height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-      glBindFramebuffer(GL_READ_BUFFER, 0);
-      glBindFramebuffer(GL_DRAW_BUFFER, 0);
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
     
     void Framebuffer::draw(int width, int height) const
     {
-      glBindFramebuffer(GL_READ_BUFFER, framebufferId);
-      glBindFramebuffer(GL_DRAW_BUFFER, 0);
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferId);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
       glDrawBuffer(GL_BACK);
       glBlitFramebuffer(0, 0, this->width, this->height, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-      glBindFramebuffer(GL_READ_BUFFER, 0);
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     }
 
     // ---- Render Buffers ---- //

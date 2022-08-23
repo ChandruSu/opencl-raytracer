@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -34,5 +35,15 @@ namespace sunstorm
      * @return gfx::Texture* 
      */
     gfx::Texture* readTextureFile(std::string filepath);
+  }
+
+  namespace time
+  {
+    /**
+     * @brief Get the current time since the UNIX epoch (Jan 1st 1970) in microseconds.
+     * 
+     * @return long long 
+     */
+    long long getTimeMicroseconds();
   }
 }
