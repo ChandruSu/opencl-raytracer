@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -35,6 +36,15 @@ namespace sunstorm
      * @return gfx::Texture* 
      */
     gfx::Texture* readTextureFile(std::string filepath);
+
+    /**
+     * @brief Reads wavefront file and stores model information into OpenGL
+     *    vertex array object to be rendered.
+     * 
+     * @param filepath 
+     * @return gfx::Mesh*
+     */
+    gfx::Mesh* readOBJFile(std::string filepath);
   }
 
   namespace time

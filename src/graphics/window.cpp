@@ -51,10 +51,10 @@ namespace sunstorm
       glEnable(GL_DEBUG_OUTPUT);
       glEnable(GL_DEPTH_TEST);
       glEnable(GL_TEXTURE_2D);
-      glEnable(GL_CULL_FACE);
       glEnable(GL_BLEND);
+      // glEnable(GL_CULL_FACE);
+      // glCullFace(GL_BACK);
       glFrontFace (GL_CCW);
-      glCullFace(GL_BACK);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glDebugMessageCallback(Window::debugCallback, nullptr);
     }

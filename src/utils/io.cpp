@@ -4,6 +4,21 @@ namespace sunstorm
 {
   namespace io 
   {
+    void splitString(std::string str, std::vector<std::string>& out, char delimeter)
+    {
+      out.clear();
+      size_t i0 = 0;
+      size_t i1 = i0;
+
+      while (i1 <= str.length()) {
+        if (str[i1] == delimeter || str[i1] == '\0') {
+          out.push_back(str.substr(i0, i1 - i0));
+          i0 = ++i1;
+        }
+        i1++;
+      }
+    }
+
     std::string readFile(std::string filepath)
     {
       std::ifstream input(RES_DIR + filepath);
@@ -37,6 +52,96 @@ namespace sunstorm
       texture->unbind(0);
       stbi_image_free(image);
       return texture;
+    }
+    
+    gfx::Mesh* readOBJFile(std::string filepath)
+    {
+      std::ifstream input(RES_DIR + filepath);
+
+      if (input.fail() || !input.is_open()) {
+        std::cerr << "[Error] Failed to open file: " << filepath << "!" << std::endl;
+      }
+
+      std::vector<glm::vec3> vertices;
+      std::vector<glm::vec2> uvCoords;
+      std::vector<glm::vec3> normals;
+      std::vector<unsigned short> indices;
+
+      std::map<std::string, unsigned short> indexMap;
+
+      // buffered file reading
+      std::vector<std::string> data;
+      
+      for (std::string line; std::getline(input, line);) 
+      {
+        splitString(line, data, ' ');
+        
+        if (data[0] == "v") {
+          vertices.push_back(glm::vec3(
+            std::stof(data[1]),
+            std::stof(data[2]),
+            std::stof(data[3])
+          ));
+        } else if (data[0] == "vt") {
+          uvCoords.push_back(glm::vec2(
+            std::stof(data[1]),
+            std::stof(data[2])
+          ));
+        } else if (data[0] == "vn") {
+          normals.push_back(glm::vec3(
+            std::stof(data[1]),
+            std::stof(data[2]),
+            std::stof(data[3])
+          ));
+        } else if (data[0] == "f") {
+          for (int i=1; i < 4; i++) {
+            if (indexMap.contains(data[i])) {
+              indices.push_back(indexMap[data[i]]);
+            } else {
+              indices.push_back((unsigned short) indexMap.size());
+              indexMap[data[i]] = (unsigned short) indexMap.size();
+            }
+          }
+        }
+      }
+
+      int vertexCount = (unsigned short) indexMap.size();
+      float* vertexData = (float*) malloc(sizeof(float) * 3 * vertexCount);
+      float* uvData     = (float*) malloc(sizeof(float) * 2 * vertexCount);
+      float* normalData = (float*) malloc(sizeof(float) * 3 * vertexCount);
+
+      int ii, vi, ui, ni;
+      for (std::pair<std::string, unsigned short> kv : indexMap)
+      {
+        splitString(kv.first, data, '/');
+        ii = kv.second;
+        vi = std::stoi(data[0]) - 1;
+        ui = std::stoi(data[1]) - 1;
+        ni = std::stoi(data[2]) - 1;
+
+        vertexData[ii * 3]     = (vertices[vi].x);
+        vertexData[ii * 3 + 1] = (vertices[vi].y);
+        vertexData[ii * 3 + 2] = (vertices[vi].z);
+
+        uvData[ii * 2]         = (uvCoords[ui].x);
+        uvData[ii * 2 + 1]     = (uvCoords[ui].y);
+
+        normalData[ii * 3]     = (normals[ni].x);
+        normalData[ii * 3 + 1] = (normals[ni].y);
+        normalData[ii * 3 + 2] = (normals[ni].z);
+      }
+
+      gfx::Mesh* mesh = new gfx::Mesh(filepath);
+      mesh->setVertexCount((unsigned short) indices.size());
+      mesh->createVertexBuffer(0, 3, vertexData, vertexCount);
+      mesh->createVertexBuffer(1, 2, uvData, vertexCount);
+      mesh->createVertexBuffer(2, 3, normalData, vertexCount);
+      mesh->createElementBuffer(indices.data());
+      free(vertexData);
+      free(uvData);
+      free(normalData);
+
+      return mesh;
     }
   }
 }

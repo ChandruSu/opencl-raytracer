@@ -9,19 +9,19 @@ typedef struct Ray {
 } Ray;
 
 typedef struct RayHit {
-  float dist;
-  float3 point;
+  float  dist;
+  float3 pos;
   float3 normal;
 } RayHit;
 
 typedef struct Sphere {
   float3 center;
-  float radius;
+  float  radius;
 } Sphere;
 
 typedef struct Plane {
   float3 normal;
-  float d;
+  float  d;
 } Plane;
 
 /* Ray tracing methods. */
@@ -54,7 +54,7 @@ RayHit raySphereIntersect(Ray* ray, Sphere* sphere)
 
   RayHit hit;
   hit.dist = 0.0f;
-  hit.point = (float3)(0.0f, 0.0f, 0.0f);
+  hit.pos = (float3)(0.0f, 0.0f, 0.0f);
   hit.normal = (float3)(0.0f, 0.0f, 0.0f);
 
   if (discriminant < 0.0f) {
@@ -66,8 +66,8 @@ RayHit raySphereIntersect(Ray* ray, Sphere* sphere)
 
   if (lambda > EPSILON) {
     hit.dist = lambda;
-    hit.point = lambda * ray->dir + ray->pos;
-    hit.normal = normalize(hit.point - sphere->center);
+    hit.pos = lambda * ray->dir + ray->pos;
+    hit.normal = normalize(hit.pos - sphere->center);
   }
 
   return hit;
@@ -80,12 +80,12 @@ RayHit rayPlaneIntersect(Ray* ray, Plane* plane)
 
   RayHit hit;
   hit.dist = 0.0f;
-  hit.point = (float3)(0.0f, 0.0f, 0.0f);
+  hit.pos = (float3)(0.0f, 0.0f, 0.0f);
   hit.normal = (float3)(0.0f, 0.0f, 0.0f);
 
   if (b != 0.0f) {
     hit.dist = a / b;
-    hit.point = hit.dist * ray->dir + ray->pos;
+    hit.pos = hit.dist * ray->dir + ray->pos;
     hit.normal = plane->normal;
   }
   
@@ -126,17 +126,17 @@ __kernel void trace (
     float4 color = (float4)(0.0f, 0.0f, 0.0f, 1.0f);
 
     if (hit.dist > 0.0f && (hit0.dist <= 0.0f || hit.dist < hit0.dist)) {
-      color = (float4)(1.0f, 0.0f, 0.0f, 1.0f) * max(0.10f + dot(normalize(hit.point - lightPos), hit.normal) / 2.0f, 0.05f);
+      color = (float4)(1.0f, 0.0f, 0.0f, 1.0f) * max(0.10f + dot(normalize(hit.pos - lightPos), hit.normal) / 2.0f, 0.05f);
     } else if (hit0.dist > 0.0f) {
       Ray ray0;
-      ray0.pos = hit0.point;
-      ray0.dir = -normalize(lightPos - hit0.point);
+      ray0.pos = hit0.pos;
+      ray0.dir = -normalize(lightPos - hit0.pos);
       
-      float lighting = max(0.5f + 0.5f * dot(normalize(lightPos - hit0.point), hit0.normal), 0.05f);
+      float lighting = max(0.5f + 0.5f * dot(normalize(lightPos - hit0.pos), hit0.normal), 0.05f);
       RayHit hit1 = raySphereIntersect(&ray0, &sphere);
 
       if (hit1.dist > 0.0f) {
-        lighting = 0.05f;
+        lighting = 0.15f;
       }
 
       color = (float4)(0.0f, 1.0f, 0.0f, 1.0f) * lighting;

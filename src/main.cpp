@@ -75,16 +75,41 @@ void run()
   size_t globalSize[] = { w, h };
   size_t localSize[] = { globalSize[0] / 64, globalSize[1] / 64 };
 
-
   /* --- Main Game loop --- */
 
   while (!window.isClosed())
   {
     window.update();
-    double t0 = glfwGetTime();
+    // double t0 = glfwGetTime();
     rt.execute(localSize, globalSize);
     framebuffer.draw(window.getWidth(), window.getHeight());
-    SSRT_DBG_OUTPUT("Took: " << (glfwGetTime() - t0) * 1000 << " ms");
+    // SSRT_DBG_OUTPUT("Took: " << (glfwGetTime() - t0) * 1000 << " ms");
+  }
+}
+
+void run2()
+{
+  unsigned int w = 512, h = 512;
+
+  /* --- Graphics setup --- */
+
+  gfx::Window window = gfx::Window("Graphics Test | v0.0.1", w, h);
+
+  gfx::Shader shader = gfx::Shader("diffuse");
+  shader.createShader(GL_VERTEX_SHADER, io::readFile("glsl/base_vert.glsl"));
+  shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/base_frag.glsl"));
+  shader.buildProgram();
+  shader.unbindProgram();
+
+  gfx::Mesh mesh = *io::readOBJFile("models/cube.obj");
+
+  while (!window.isClosed()) {
+    window.update();
+    shader.bindProgram();
+    mesh.bindMesh();
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
+    mesh.unbindMesh();
+    shader.unbindProgram();
   }
 }
 
@@ -97,7 +122,7 @@ int main(int argc, char const *argv[])
   bool success = true;
 
   try {
-    run();
+    run2();
   } 
   catch(const std::exception& e) {
     std::cerr << "[Error] " << e.what() << std::endl;
