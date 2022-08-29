@@ -6,11 +6,15 @@ A simple raytracing engine written in C++ using OpenCL for GPU accelerated paral
 
 The following image shows raytracing using distance-functions for simple 3D geometry i.e plane, sphere, ray intersections. This has been extended to create simple shadows and diffuse lighting.
 
-![Raytrace Rendering](/res/img/demo/raytrace_test.png)
+<p align="center">
+  <img src="res/img/demo/raytrace_test.png" width="400px">
+</p>
 
 The engine also supports the classical OpenGL rendering pipeline using vertex data loaded from Wavefront (.obj) files and GLSL shaders.
 
-![Classic Rendering](/res/img/demo/raster_test.png)
+<p align="center">
+  <img src="res/img/demo/raster_test.png" width="512px">
+</p>
 
 ## Building
 
