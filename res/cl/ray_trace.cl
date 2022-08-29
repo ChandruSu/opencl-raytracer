@@ -120,7 +120,7 @@ __kernel void trace (
     RayHit hit = raySphereIntersect(&ray, &sphere);
     RayHit hit0 = rayPlaneIntersect(&ray, &plane);
 
-    float3 lightPos = (float3)(-50.0f, 100.0f, -70.0f);
+    float3 lightPos = (float3)(-500.0f, 1000.0f, -700.0f);
     // float3 lightPos = (float3)(0.0f, 2.0f, 1.0f);
 
     float4 color = (float4)(0.0f, 0.0f, 0.0f, 1.0f);
@@ -139,7 +139,7 @@ __kernel void trace (
         lighting = 0.15f;
       }
 
-      color = (float4)(0.0f, 1.0f, 0.0f, 1.0f) * lighting;
+      color = (float4)(0.96f, 0.31f, 0.21f, 1.0f) * lighting;
     }
 
     write_imagef(img, (int2)(x, y), color);
