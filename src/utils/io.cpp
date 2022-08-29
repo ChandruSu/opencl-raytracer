@@ -65,9 +65,9 @@ namespace sunstorm
       std::vector<glm::vec3> vertices;
       std::vector<glm::vec2> uvCoords;
       std::vector<glm::vec3> normals;
-      std::vector<unsigned short> indices;
+      std::vector<unsigned int> indices;
 
-      std::map<std::string, unsigned short> indexMap;
+      std::map<std::string, unsigned int> indexMap;
 
       // buffered file reading
       std::vector<std::string> data;
@@ -98,20 +98,20 @@ namespace sunstorm
             if (indexMap.contains(data[i])) {
               indices.push_back(indexMap[data[i]]);
             } else {
-              indices.push_back((unsigned short) indexMap.size());
-              indexMap[data[i]] = (unsigned short) indexMap.size();
+              indices.push_back(indexMap.size());
+              indexMap[data[i]] = indexMap.size();
             }
           }
         }
       }
 
-      int vertexCount = (unsigned short) indexMap.size();
-      float* vertexData = (float*) malloc(sizeof(float) * 3 * vertexCount);
-      float* uvData     = (float*) malloc(sizeof(float) * 2 * vertexCount);
-      float* normalData = (float*) malloc(sizeof(float) * 3 * vertexCount);
+      size_t vertexCount = (unsigned int) indexMap.size();
+      float* vertexData = new float[vertexCount * 3];
+      float* uvData     = new float[vertexCount * 2];
+      float* normalData = new float[vertexCount * 3];
 
       int ii, vi, ui, ni;
-      for (std::pair<std::string, unsigned short> kv : indexMap)
+      for (std::pair<std::string, unsigned int> kv : indexMap)
       {
         splitString(kv.first, data, '/');
         ii = kv.second;
@@ -132,7 +132,7 @@ namespace sunstorm
       }
 
       gfx::Mesh* mesh = new gfx::Mesh(filepath);
-      mesh->setVertexCount((unsigned short) indices.size());
+      mesh->setVertexCount(indices.size());
       mesh->createVertexBuffer(0, 3, vertexData, vertexCount);
       mesh->createVertexBuffer(1, 2, uvData, vertexCount);
       mesh->createVertexBuffer(2, 3, normalData, vertexCount);

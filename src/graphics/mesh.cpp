@@ -46,12 +46,12 @@ namespace sunstorm
       unbindMesh();
     }
 
-    void Mesh::createElementBuffer(GLushort* data)
+    void Mesh::createElementBuffer(GLuint* data)
     {
       bindMesh();
       glGenBuffers(1, &elementBufferId);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexCount * sizeof(GLushort), data, GL_STATIC_DRAW);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexCount * sizeof(GLuint), data, GL_STATIC_DRAW);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       unbindMesh();
     }

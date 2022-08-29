@@ -286,7 +286,7 @@ namespace sunstorm
        * 
        * @param data Element indices
        */
-      void createElementBuffer(GLushort* data);
+      void createElementBuffer(GLuint* data);
 
       /**
        * @brief Get the Element Buffer Id

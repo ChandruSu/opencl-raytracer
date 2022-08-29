@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 using namespace sunstorm;
 
@@ -89,7 +90,7 @@ void run()
 
 void run2()
 {
-  unsigned int w = 512, h = 512;
+  unsigned int w = 812, h = 612;
 
   /* --- Graphics setup --- */
 
@@ -100,14 +101,29 @@ void run2()
   shader.createShader(GL_FRAGMENT_SHADER, io::readFile("glsl/base_frag.glsl"));
   shader.buildProgram();
   shader.unbindProgram();
+  shader.getUniform("projection");
+  shader.getUniform("transformation");
+  shader.getUniform("view");
 
+  SSRT_DBG_OUTPUT("A");
   gfx::Mesh mesh = *io::readOBJFile("models/cube.obj");
+  SSRT_DBG_OUTPUT("B");
+
+  glm::mat4 projection = glm::perspective(glm::radians(65.0f), window.getAspectRatio(), 0.001f, 1000.0f);
+  glm::mat4 transformation = glm::mat4(1.0f);
+  transformation = glm::translate(transformation, glm::vec3(0.0f, -5.0f, -15.0f));
+  glm::mat4 view = glm::mat4(1.0f);
 
   while (!window.isClosed()) {
+    transformation = glm::rotate(transformation, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    
     window.update();
     shader.bindProgram();
+    shader.setUniformMatrix4x4("projection", projection);
+    shader.setUniformMatrix4x4("transformation", transformation);
+    shader.setUniformMatrix4x4("view", view);
     mesh.bindMesh();
-    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
     mesh.unbindMesh();
     shader.unbindProgram();
   }
